@@ -1,6 +1,8 @@
-# CSV and Log Viewer
+# File Viewer (view CSV, VTT, Log, SRT, and more)
 
-View and edit CSV files as formatted, interactive tables, and inspect `.log` files with filtering.
+File Viewer lets you open common data, transcript, and text-based files directly in Obsidian with purpose-built views instead of raw plain text.
+
+Use it to view and edit `.csv` files as formatted tables, inspect `.log` files with filters and highlighting, and read `.vtt` or `.srt` transcript files as searchable timestamped cues.
 
 ## Features
 
@@ -9,6 +11,7 @@ View and edit CSV files as formatted, interactive tables, and inspect `.log` fil
 - **Inline Editing** — Toggle edit mode to modify cells directly in the table. Changes auto-save on blur. Tab/Shift+Tab to navigate between cells, Escape to deselect.
 - **CSV Search & Filter** — Real-time search across all columns with match highlighting
 - **Log Viewer** — Open `.log` files with line numbers, log level coloring, timestamp highlighting, level filters, search, and auto-scroll
+- **Transcript Viewer** — Open `.vtt` and `.srt` files as readable cue lists with timestamps, multiline captions, and search highlighting
 - **Theme Support** — Uses Obsidian's CSS variables so tables match your light or dark theme
 - **Responsive Layout** — Sticky headers, horizontal scrolling, and text-overflow handling for wide data
 - **Row & Column Counts** — Toolbar shows dataset dimensions and filtered result counts
@@ -18,7 +21,7 @@ View and edit CSV files as formatted, interactive tables, and inspect `.log` fil
 ### From Community Plugins (recommended)
 
 1. Open **Settings → Community Plugins → Browse**
-2. Search for **CSV and Log Viewer**
+2. Search for **File Viewer**
 3. Click **Install**, then **Enable**
 
 ### Obsidian CLI
@@ -48,13 +51,19 @@ Open any `.log` file in your vault to inspect it in the log viewer.
 - **Level filters** — Toggle Errors, Warnings, Info, and Debug to narrow the view.
 - **Auto-scroll** — Keep the viewer pinned to the latest matching line when reading growing logs.
 
+Open any `.vtt` or `.srt` file in your vault to read it in the transcript viewer.
+
+- **Search** — Type in the filter box to show matching transcript cues.
+- **Cue timing** — Each cue shows its number and start/end timestamp.
+- **Multiline captions** — Wrapped captions preserve line breaks from the transcript file.
+
 ## Options
 
-In the plugin options, you can enable or disable CSV viewing and log viewing separately. Reload the plugin after changing either file type option.
+In the plugin options, you can enable or disable CSV, log, VTT transcript, and SRT transcript viewing separately. Reload the plugin after changing any file type option.
 
 ## Privacy
 
-CSV and Log Viewer works entirely inside your vault. It does not make network requests, collect telemetry, show ads, require an account, or read files outside the CSV or log file opened in Obsidian.
+File Viewer works entirely inside your vault. It does not make network requests, collect telemetry, show ads, require an account, or read files outside the CSV, log, or transcript file opened in Obsidian.
 
 ## Development
 
