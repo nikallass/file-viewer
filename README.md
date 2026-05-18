@@ -1,6 +1,8 @@
-# CSV and Log Viewer
+# File Viewer (view CSV, VTT, Log, SRT, and more)
 
-View and edit CSV files as formatted, interactive tables, inspect `.log` files with filtering, and read `.vtt` or `.srt` transcript files.
+File Viewer lets you open common data, transcript, and text-based files directly in Obsidian with purpose-built views instead of raw plain text.
+
+Use it to view and edit `.csv` files as formatted tables, inspect `.log` files with filters and highlighting, and read `.vtt` or `.srt` transcript files as searchable timestamped cues.
 
 ## Features
 
@@ -19,7 +21,7 @@ View and edit CSV files as formatted, interactive tables, inspect `.log` files w
 ### From Community Plugins (recommended)
 
 1. Open **Settings → Community Plugins → Browse**
-2. Search for **CSV and Log Viewer**
+2. Search for **File Viewer**
 3. Click **Install**, then **Enable**
 
 ### Obsidian CLI
@@ -61,7 +63,7 @@ In the plugin options, you can enable or disable CSV, log, VTT transcript, and S
 
 ## Privacy
 
-CSV and Log Viewer works entirely inside your vault. It does not make network requests, collect telemetry, show ads, require an account, or read files outside the CSV, log, or transcript file opened in Obsidian.
+File Viewer works entirely inside your vault. It does not make network requests, collect telemetry, show ads, require an account, or read files outside the CSV, log, or transcript file opened in Obsidian.
 
 ## Development
 
