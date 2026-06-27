@@ -27,13 +27,13 @@ Use it to view and edit `.csv` files as formatted tables, inspect `.log` files w
 ### Obsidian CLI
 
 ```bash
-obsidian plugin:install id=file-viewer enable
+obsidian plugin:install id=csv-viewer enable
 ```
 
 ### Manual Installation
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/jethrojones/file-viewer/releases/latest)
-2. Create a folder called `file-viewer` in your vault's `.obsidian/plugins/` directory
+2. Create a folder called `csv-viewer` in your vault's `.obsidian/plugins/` directory
 3. Copy all three files into that folder
 4. Reload Obsidian and enable the plugin in **Settings → Community Plugins**
 
