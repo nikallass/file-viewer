@@ -32,7 +32,7 @@ obsidian plugin:install id=csv-viewer enable
 
 ### Manual Installation
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/jethrojones/obsidian-csv-viewer/releases/latest)
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/jethrojones/file-viewer/releases/latest)
 2. Create a folder called `csv-viewer` in your vault's `.obsidian/plugins/` directory
 3. Copy all three files into that folder
 4. Reload Obsidian and enable the plugin in **Settings → Community Plugins**
@@ -68,8 +68,8 @@ File Viewer works entirely inside your vault. It does not make network requests,
 ## Development
 
 ```bash
-git clone https://github.com/jethrojones/obsidian-csv-viewer.git
-cd obsidian-csv-viewer
+git clone https://github.com/jethrojones/file-viewer.git
+cd file-viewer
 npm install
 npm run dev    # Watch mode with sourcemaps
 npm run build  # Production build
