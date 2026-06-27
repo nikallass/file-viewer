@@ -1,6 +1,6 @@
 {
   "name": "file-viewer",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "View CSV, VTT, Log, SRT, and more with purpose-built file views.",
   "main": "main.js",
   "scripts": {
