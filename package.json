@@ -1,6 +1,6 @@
 {
   "name": "file-viewer",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "View CSV, VTT, Log, SRT, and more with purpose-built file views.",
   "main": "main.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "srt",
     "viewer"
   ],
-  "author": "Life Lab",
+  "author": "Jethro Jones",
   "license": "MIT",
   "devDependencies": {
     "@emnapi/core": "^1.10.0",
