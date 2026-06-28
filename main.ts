@@ -1,5 +1,6 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting, TextFileView } from 'obsidian';
 import { parseCSV, parseTranscript, serializeCSV, TranscriptCue, TranscriptFormat } from './csv-parser';
+import { SUPPORT_ISSUES_URL } from './support';
 
 const CSV_VIEW_TYPE = 'csv-view';
 const LOG_VIEW_TYPE = 'log-view';
@@ -818,6 +819,15 @@ class CSVViewerSettingTab extends PluginSettingTab {
                     this.plugin.settings.enableSrtViewer = value;
                     await this.plugin.saveSettings();
                     new Notice('Reload this plugin for file type changes to take effect.');
+                }));
+
+        new Setting(containerEl)
+            .setName('Feedback')
+            .setDesc('Report a bug or suggest a feature on GitHub.')
+            .addButton((button) => button
+                .setButtonText('Open issues')
+                .onClick(() => {
+                    window.open(SUPPORT_ISSUES_URL);
                 }));
     }
 }
