@@ -1,23 +1,27 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting, TextFileView } from 'obsidian';
 import { parseCSV, parseTranscript, serializeCSV, TranscriptCue, TranscriptFormat } from './csv-parser';
+import { formatJson, minifyJson, validateJson } from './json-utils';
 import { SUPPORT_ISSUES_URL } from './support';
 
 const CSV_VIEW_TYPE = 'csv-view';
 const LOG_VIEW_TYPE = 'log-view';
 const TRANSCRIPT_VIEW_TYPE = 'transcript-view';
+const JSON_VIEW_TYPE = 'json-view';
 
 interface CSVViewerSettings {
     enableCsvViewer: boolean;
     enableLogViewer: boolean;
     enableVttViewer: boolean;
     enableSrtViewer: boolean;
+    enableJsonViewer: boolean;
 }
 
 const DEFAULT_SETTINGS: CSVViewerSettings = {
     enableCsvViewer: true,
     enableLogViewer: true,
     enableVttViewer: true,
-    enableSrtViewer: true
+    enableSrtViewer: true,
+    enableJsonViewer: true
 };
 
 type LogLevel = 'error' | 'warning' | 'info' | 'debug' | 'default';
@@ -709,6 +713,162 @@ class TranscriptView extends TextFileView {
     }
 }
 
+class JsonView extends TextFileView {
+    data: string = '';
+    indentSize: number = 2;
+    editorEl?: HTMLTextAreaElement;
+    statusEl?: HTMLElement;
+
+    getViewType(): string {
+        return JSON_VIEW_TYPE;
+    }
+
+    getDisplayText(): string {
+        return this.file?.basename || 'JSON';
+    }
+
+    getIcon(): string {
+        return 'braces';
+    }
+
+    onOpen(): Promise<void> {
+        this.contentEl.addClass('json-view-container');
+        return Promise.resolve();
+    }
+
+    onClose(): Promise<void> {
+        this.contentEl.empty();
+        return Promise.resolve();
+    }
+
+    getViewData(): string {
+        return this.editorEl?.value ?? this.data;
+    }
+
+    setViewData(data: string, _clear: boolean): void {
+        this.data = data;
+        this.renderJson();
+    }
+
+    clear(): void {
+        this.data = '';
+        this.contentEl.empty();
+    }
+
+    renderJson(): void {
+        this.contentEl.empty();
+
+        const container = this.contentEl.createDiv({ cls: 'json-view-content' });
+        const toolbar = container.createDiv({ cls: 'json-view-toolbar' });
+
+        const validateBtn = toolbar.createEl('button', {
+            text: 'Validate',
+            cls: 'json-action-btn'
+        });
+
+        const formatBtn = toolbar.createEl('button', {
+            text: 'Format',
+            cls: 'json-action-btn'
+        });
+
+        const minifyBtn = toolbar.createEl('button', {
+            text: 'Minify',
+            cls: 'json-action-btn'
+        });
+
+        const indentSelect = toolbar.createEl('select', {
+            cls: 'json-indent-select',
+            attr: { 'aria-label': 'JSON indentation size' }
+        });
+        indentSelect.createEl('option', { text: '2 Spaces', value: '2' });
+        indentSelect.createEl('option', { text: '4 Spaces', value: '4' });
+        indentSelect.value = String(this.indentSize);
+
+        const status = toolbar.createDiv({ cls: 'json-view-info' });
+        const editor = container.createEl('textarea', {
+            cls: 'json-editor',
+            attr: {
+                'aria-label': 'JSON editor',
+                autocapitalize: 'off',
+                autocomplete: 'off',
+                autocorrect: 'off',
+                spellcheck: 'false',
+                wrap: 'off'
+            }
+        });
+
+        editor.value = this.data;
+        this.editorEl = editor;
+        this.statusEl = status;
+
+        indentSelect.addEventListener('change', () => {
+            this.indentSize = Number(indentSelect.value);
+        });
+
+        validateBtn.addEventListener('click', () => {
+            const isValid = this.updateValidationStatus();
+            new Notice(isValid ? 'JSON is valid.' : 'JSON needs a fix before formatting.');
+        });
+
+        formatBtn.addEventListener('click', () => {
+            this.applyJsonTransform(formatJson(this.getViewData(), this.indentSize), 'JSON formatted.');
+        });
+
+        minifyBtn.addEventListener('click', () => {
+            this.applyJsonTransform(minifyJson(this.getViewData()), 'JSON minified.');
+        });
+
+        editor.addEventListener('input', () => {
+            this.data = editor.value;
+            this.updateValidationStatus();
+            this.requestSave();
+        });
+
+        this.updateValidationStatus();
+    }
+
+    applyJsonTransform(result: ReturnType<typeof formatJson>, successNotice: string): void {
+        if (!result.success) {
+            this.updateValidationStatus(result.error);
+            new Notice('JSON needs a fix before formatting.');
+            return;
+        }
+
+        this.data = result.text;
+        if (this.editorEl) {
+            this.editorEl.value = result.text;
+            this.editorEl.focus();
+        }
+        this.updateValidationStatus();
+        this.requestSave();
+        new Notice(successNotice);
+    }
+
+    updateValidationStatus(errorOverride?: string): boolean {
+        if (!this.statusEl) return false;
+
+        if (errorOverride) {
+            this.statusEl.setText(errorOverride);
+            this.statusEl.removeClass('valid');
+            this.statusEl.addClass('error');
+            return false;
+        }
+
+        const result = validateJson(this.getViewData());
+        if (result.valid) {
+            this.statusEl.setText(result.summary);
+            this.statusEl.removeClass('error');
+            this.statusEl.addClass('valid');
+            return true;
+        }
+
+        this.statusEl.setText(result.error);
+        this.statusEl.removeClass('valid');
+        this.statusEl.addClass('error');
+        return false;
+    }
+}
+
 export default class CSVViewerPlugin extends Plugin {
     settings: CSVViewerSettings;
 
@@ -718,6 +878,7 @@ export default class CSVViewerPlugin extends Plugin {
         this.registerView(CSV_VIEW_TYPE, (leaf) => new CSVView(leaf));
         this.registerView(LOG_VIEW_TYPE, (leaf) => new LogView(leaf));
         this.registerView(TRANSCRIPT_VIEW_TYPE, (leaf) => new TranscriptView(leaf));
+        this.registerView(JSON_VIEW_TYPE, (leaf) => new JsonView(leaf));
 
         if (this.settings.enableCsvViewer) {
             this.registerExtensions(['csv'], CSV_VIEW_TYPE);
@@ -733,6 +894,10 @@ export default class CSVViewerPlugin extends Plugin {
 
         if (this.settings.enableSrtViewer) {
             this.registerExtensions(['srt'], TRANSCRIPT_VIEW_TYPE);
+        }
+
+        if (this.settings.enableJsonViewer) {
+            this.registerExtensions(['json'], JSON_VIEW_TYPE);
         }
 
         this.addSettingTab(new CSVViewerSettingTab(this.app, this));
@@ -760,7 +925,8 @@ export default class CSVViewerPlugin extends Plugin {
             ...(typeof candidate.enableCsvViewer === 'boolean' ? { enableCsvViewer: candidate.enableCsvViewer } : {}),
             ...(typeof candidate.enableLogViewer === 'boolean' ? { enableLogViewer: candidate.enableLogViewer } : {}),
             ...(typeof candidate.enableVttViewer === 'boolean' ? { enableVttViewer: candidate.enableVttViewer } : {}),
-            ...(typeof candidate.enableSrtViewer === 'boolean' ? { enableSrtViewer: candidate.enableSrtViewer } : {})
+            ...(typeof candidate.enableSrtViewer === 'boolean' ? { enableSrtViewer: candidate.enableSrtViewer } : {}),
+            ...(typeof candidate.enableJsonViewer === 'boolean' ? { enableJsonViewer: candidate.enableJsonViewer } : {})
         };
     }
 }
@@ -817,6 +983,17 @@ class CSVViewerSettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.enableSrtViewer)
                 .onChange(async (value) => {
                     this.plugin.settings.enableSrtViewer = value;
+                    await this.plugin.saveSettings();
+                    new Notice('Reload this plugin for file type changes to take effect.');
+                }));
+
+        new Setting(containerEl)
+            .setName('JSON viewer')
+            .setDesc('Open .json files in an editable JSON viewer with validation and formatting controls.')
+            .addToggle((toggle) => toggle
+                .setValue(this.plugin.settings.enableJsonViewer)
+                .onChange(async (value) => {
+                    this.plugin.settings.enableJsonViewer = value;
                     await this.plugin.saveSettings();
                     new Notice('Reload this plugin for file type changes to take effect.');
                 }));
