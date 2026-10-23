@@ -41,5 +41,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "dependencies": {
+    "jq-wasm": "^3.0.0-jq-1.8.2"
   }
 }
